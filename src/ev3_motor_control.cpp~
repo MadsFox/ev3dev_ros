@@ -1,17 +1,19 @@
 #include "ev3dev.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "ev3dev_ros/MotorCommands.h"
 
 #include <sstream>
 
 using namespace std;
 using namespace ev3dev; 
+using ev3dev_ros::MotorCommands;
 
-void 
+void motorControlCallback(MotorCommands mc){
+  int speed = mc.speed;
+  int direction = mc.direction;
 
-void motorControlCallback(const ev3_msgs::Motors::ConstPtr& msg){
-  
-
+  ROS_INFO("speed: %i - direction: %i", speed, direction);
   /*Place the ROS logic to run the motors here*/
 }
 

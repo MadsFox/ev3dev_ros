@@ -1,16 +1,26 @@
 #include "ev3dev.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "ev3dev_ros/MotorCommands.h"
 
 #include <sstream>
 
 using namespace std;
 using namespace ev3dev; 
+using ev3dev_ros::MotorCommands;
 
-void motorControlCallback(const ev3_msgs::Motors::ConstPtr& msg){
+class MotorController{
+  public:
+    MotorController()
+
+
+  void motorCommandCallback(MotorCommands mc){
+    int speed = mc.speed;
+    int direction = mc.direction;
   
-
-  /*Place the ROS logic to run the motors here*/
+    ROS_INFO("speed: %i - direction: %i", speed, direction);
+    /*Place the ROS logic to run the motors here*/
+  }
 }
 
 int main(int argc, char **argv)
@@ -23,7 +33,7 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  ros::Subscriber sub = n.subscribe("motor_commands", 1000, motorControlCallback());
+  ros::Subscriber sub = n.subscribe("motor_commands", 1000, motorControlCallback);
 
   ros::spin();
 
