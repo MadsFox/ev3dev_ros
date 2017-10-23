@@ -9,19 +9,13 @@ using namespace std;
 using namespace ev3dev; 
 using ev3dev_ros::MotorCommands;
 
-class MotorController{
-  public:
-    MotorController()
-
-
-  void motorCommandCallback(MotorCommands mc){
-    int speed = mc.speed;
-    int direction = mc.direction;
-  
-    ROS_INFO("speed: %i - direction: %i", speed, direction);
-    /*Place the ROS logic to run the motors here*/
-  }
+void motorCommandCallback(MotorCommands mc){
+  int speed = mc.speed;
+  int direction = mc.direction;
+  ROS_INFO("speed: %i - direction: %i", speed, direction);
+  /*Place the ROS logic to run the motors here*/
 }
+
 
 int main(int argc, char **argv)
 {
@@ -33,7 +27,7 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  ros::Subscriber sub = n.subscribe("motor_commands", 1000, motorControlCallback);
+  ros::Subscriber sub = n.subscribe("motor_command", 1000, motorCommandCallback);
 
   ros::spin();
 
