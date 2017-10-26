@@ -13,7 +13,7 @@ class Motors{
   public:
     Motors(string right_motor_port, string left_motor_port): right_motor_port(right_motor_port), left_motor_port(left_motor_port), motors_() {
       connect_motors();
-      set_command("stop");
+      set_command("run-direct");
     }
 
     void motorCommandCallback(MotorCommands mc){
@@ -64,10 +64,8 @@ class Motors{
         motor &mo = motors_[j];
         if(mo.address() == right_motor_port){
           mo.set_speed_sp(speed-direction);
-          mo.set_command("run-forever");
         }else if(mo.address() == left_motor_port){
           mo.set_speed_sp(speed+direction);
-          mo.set_command("run-forever");
         }
       }
     }
