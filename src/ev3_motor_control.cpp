@@ -63,9 +63,9 @@ class Motors{
       for (unsigned j=0; j<2; ++j){
         motor &mo = motors_[j];
         if(mo.address() == right_motor_port){
-          mo.set_speed_sp(speed-direction);
+          mo.set_duty_cycle_sp(speed-direction);
         }else if(mo.address() == left_motor_port){
-          mo.set_speed_sp(speed+direction);
+          mo.set_duty_cycle_sp(speed+direction);
         }
       }
     }
