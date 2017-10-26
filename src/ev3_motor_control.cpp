@@ -47,7 +47,7 @@ class Motors{
         {
           motors_.push_back(m);
         }else{
-          ROS_INFO("No motor connected to: %s", arrMotors[i]);
+          ROS_INFO("No motor connected to: %s", arrMotors[i].c_str());
         }
       }      
       //ROS_INFO("no motors connected of type: %s", motor_type.c_str());
