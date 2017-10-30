@@ -1,2 +1,2 @@
-int16 speed # speed of motor
-int16 direction # motor direction
+float64 speed # speed of motor
+float64 direction # motor direction

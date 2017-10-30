@@ -28,11 +28,13 @@ sensor get_connected_sensor(string &sensor_type)
 
 int main(int argc, char **argv)
 {
+  sound::speak("setting up e v 3  i r node", true);
+
   ros::init(argc, argv, "ev3_ir_talker_node");
 
   ros::NodeHandle n;
 
-  ros::Publisher ev3_ir_pub = n.advertise<std_msgs::String>("ev3_ir", 1000);
+  ros::Publisher ev3_ir_pub = n.advertise<std_msgs::String>("ev3_ir", 50);
 
   ros::Rate loop_rate(10);
 
@@ -44,6 +46,8 @@ int main(int argc, char **argv)
   sensor ir_sensor = get_connected_sensor(sensor_driver_name);
 
   ir_sensor.set_mode("IR-PROX");
+
+  sound::speak("sending i r data", true);
 
   while (ros::ok())
   {    

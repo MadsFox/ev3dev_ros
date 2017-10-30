@@ -12,21 +12,31 @@ using ev3dev_ros::MotorCommands;
 
 class Motors{
   public:
-    Motors(string right_motor_port, string left_motor_port): right_motor_port(right_motor_port), left_motor_port(left_motor_port), motors_() {
+    Motors(string right_motor_port, string left_motor_port, int max_speed): right_motor_port(right_motor_port), left_motor_port(left_motor_port), max_speed(max_speed) {
       connect_motors();
       set_command("run-direct");
     }
 
     void motorCommandCallback(MotorCommands mc){
-      update_command(mc);
+      update_command(mc.speed, mc.direction);
   
-      //ROS_INFO("speed: %i - direction: %i", mc.speed, mc.direction);
-      /*Place the ROS logic to run the motors here*/
+      //ROS_INFO("speed: %f - direction: %f", mc.speed, mc.direction);
+    }
+    void irCallback(const std_msgs::String::ConstPtr& msg){
+      ir = stoi(msg->data);
+  
+      //ROS_INFO("speed: %f - direction: %f", mc.speed, mc.direction);
     }
   private:
+    int max_speed;
+    int ir = 100;
     string right_motor_port;
     string left_motor_port;
-    vector<motor> motors_;
+    //vector<motor> motors_;
+    motor rm = motor(INPUT_AUTO);
+    motor lm = motor(INPUT_AUTO);
+    int right_speed;
+    int left_speed;
 
     void connect_motors()
     {
@@ -45,37 +55,36 @@ class Motors{
             m.address() == right_motor_port)
         {
           ROS_INFO("pushing right motor tp motors_ motors");
-          motors_.push_back(m);
+          rm=m;
         }else if (m.connected() && m.driver_name() == "lego-ev3-l-motor" && 
             m.address() == left_motor_port)
         {
           ROS_INFO("pushing left motor tp motors_ motors");
-          motors_.push_back(m);
+          lm=m;
         }else{
           ROS_INFO("No motor connected to: %s", arrMotors[i]);
         }
       }      
-      //ROS_INFO("no motors connected of type: %s", motor_type.c_str());
     }
     void set_command(string command){
       ROS_INFO("setting command: %s", command);
-      for (unsigned j=0; j<2; j++){
-        motor &mo = motors_[j];
-        mo.set_command(command);
-      }
+      rm.set_command(command);
+      lm.set_command(command);
     }
 
-    void update_command(MotorCommands mc){
+    void update_command(float speed, float direction){
       try{
-        for (unsigned j=0; j<2; ++j){
-          motor &mo = motors_[j];
-          if(mo.address() == right_motor_port){
-            ROS_INFO("right motor speed: %i - direction: %i", mc.speed, mc.direction);
-            mo.set_duty_cycle_sp(max(-100, min(mc.speed+mc.direction, 100)));
-          }else if(mo.address() == left_motor_port){
-            mo.set_duty_cycle_sp(max(-100, min(mc.speed-mc.direction, 100)));
-          }
+        if(ir > 30){
+          right_speed = max_speed*(speed-direction);
+          left_speed = max_speed*(speed+direction);
+        }else{
+          right_speed = -10;
+          left_speed = -10;
         }
+          ROS_INFO("right motor speed: %i", right_speed);
+          rm.set_duty_cycle_sp(-1*right_speed);
+          ROS_INFO("left motor speed: %i", left_speed);
+          lm.set_duty_cycle_sp(-1*left_speed);
       }catch(...) { cout << "[" << strerror(errno) << "]" << endl; }
     }
 };
@@ -88,10 +97,11 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  Motors ev3_motors(OUTPUT_A, OUTPUT_B);
+  Motors ev3_motors(OUTPUT_A, OUTPUT_B, 100);
 
-  ros::Subscriber sub = n.subscribe("motor_command", 50,
-                                    &Motors::motorCommandCallback, &ev3_motors);
+  ros::Subscriber ir_sub = n.subscribe("ev3_ir", 10, &Motors::irCallback, &ev3_motors);
+
+  ros::Subscriber motor_sub = n.subscribe("motor_command", 10,  &Motors::motorCommandCallback, &ev3_motors);
 
   ros::spin();
 
