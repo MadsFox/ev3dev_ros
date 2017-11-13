@@ -65,7 +65,6 @@ class Motors{
           ROS_INFO("No motor connected to: %s", arrMotors[i]);
         }
       }      
-      //ROS_INFO("no motors connected of type: %s", motor_type.c_str());
     }
     void set_command(string command){
       ROS_INFO("setting command: %s", command);
@@ -76,8 +75,6 @@ class Motors{
     void update_command(float speed, float direction){
       try{
         if(ir > 30){
-          //ROS_INFO("speed: %f - direction: %f", speed, direction);
-          //ROS_INFO("left motor speed: %i", left_speed);
           right_speed = max_speed*(speed-direction);
           left_speed = max_speed*(speed+direction);
         }else{

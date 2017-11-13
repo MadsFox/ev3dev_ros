@@ -18,7 +18,7 @@ class Motors{
     }
 
     void motorCommandCallback(MotorCommands mc){
-      update_command(mc.speed, mc.direction);
+      update_command(mc.right_speed, mc.left_speed);
   
       //ROS_INFO("speed: %f - direction: %f", mc.speed, mc.direction);
     }
@@ -35,8 +35,8 @@ class Motors{
     //vector<motor> motors_;
     motor rm = motor(INPUT_AUTO);
     motor lm = motor(INPUT_AUTO);
-    int right_speed;
-    int left_speed;
+    //int right_speed;
+    //int left_speed;
 
     void connect_motors()
     {
@@ -72,12 +72,9 @@ class Motors{
       lm.set_command(command);
     }
 
-    void update_command(float speed, float direction){
+    void update_command(float right_speed, float left_speed){
       try{
         if(ir > 30){
-          right_speed = max_speed*(speed-direction);
-          left_speed = max_speed*(speed+direction);
-        }else{
           right_speed = -10;
           left_speed = -10;
         }

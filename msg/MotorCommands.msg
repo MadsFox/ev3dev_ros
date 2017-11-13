@@ -1,2 +1,2 @@
-float64 speed # speed of motor
-float64 direction # motor direction
+float64 right_speed # speed of right motor
+float64 left_speed # speed of left motor
