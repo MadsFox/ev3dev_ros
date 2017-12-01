@@ -311,6 +311,7 @@ int device::get_attr_int(const std::string &name) const {
 void device::set_attr_int(const std::string &name, int value) {
   using namespace std;
 
+  cout << "line 314";
   if (_path.empty())
     throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path + " - " + name + " - " + std::to_string(value));
 
@@ -796,7 +797,9 @@ bool motor::connect(const std::map<std::string, std::set<std::string>> &match) n
   {
     return device::connect(_strClassDir, _strPattern, match);
   }
-  catch (...) { }
+  catch (...) { 
+    std::cout << "couldnt connect" << std::endl;
+  }
 
   _path.clear();
 
@@ -862,8 +865,12 @@ constexpr char servo_motor::polarity_inversed[];
 led::led(std::string name)
 {
   std::cout << "connecting to leds" << std::endl;
+  
   static const std::string _strClassDir { SYS_ROOT "/leds/" };
-  connect(_strClassDir, name, std::map<std::string, std::set<std::string>>());
+  static const std::string _strPattern  { "led" };
+  
+  std::cout << _strClassDir << std::endl;
+  connect(_strClassDir, _strPattern, {{ "address", { name }}});
 }
 
 //-----------------------------------------------------------------------------

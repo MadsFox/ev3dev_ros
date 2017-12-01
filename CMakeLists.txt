@@ -120,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
  add_library(ev3dev
-   include/ev3dev/ev3dev.cpp
+   src/ev3dev.cpp
  )
 
 ## Add cmake target dependencies of the library
