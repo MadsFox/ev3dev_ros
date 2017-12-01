@@ -34,9 +34,9 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  ros::Publisher ev3_ir_pub = n.advertise<std_msgs::String>("ev3_ir", 10);
+  ros::Publisher ev3_ir_pub = n.advertise<std_msgs::String>("ev3_ir", 5);
 
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(2);
 
   ros::Time last_time;
   ros::Time cur_time;

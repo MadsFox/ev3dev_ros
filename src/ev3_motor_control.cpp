@@ -35,8 +35,11 @@ class Motors{
     //vector<motor> motors_;
     motor rm = motor(INPUT_AUTO);
     motor lm = motor(INPUT_AUTO);
-    //int right_speed;
-    //int left_speed;
+    float last_right_speed;
+    float last_left_speed;
+    float right_speed = 0;
+    float left_speed = 0;
+
 
     void connect_motors()
     {
@@ -74,15 +77,17 @@ class Motors{
 
     void update_command(float right_speed, float left_speed){
       try{
-        if(ir > 30){
-          right_speed = -10;
-          left_speed = -10;
-        }
+        if(ir < 30){
+          rm.set_duty_cycle_sp(-100);
+          lm.set_duty_cycle_sp(-100);
+        }else if(last_right_speed != right_speed && last_left_speed != left_speed)
           ROS_INFO("right motor speed: %f", right_speed);
-          rm.set_duty_cycle_sp(-10*right_speed);
+          rm.set_duty_cycle_sp((int)(-20*right_speed));
           ROS_INFO("left motor speed: %f", left_speed);
-          lm.set_duty_cycle_sp(-10*left_speed);
+          lm.set_duty_cycle_sp((int)(-20*left_speed));
       }catch(...) { cout << "[" << strerror(errno) << "]" << endl; }
+			last_right_speed = right_speed;
+			last_left_speed = left_speed;
     }
 };
 
@@ -103,9 +108,9 @@ int main(int argc, char **argv)
 
   Motors ev3_motors(OUTPUT_A, OUTPUT_B, 100);
 
-  ros::Subscriber ir_sub = n.subscribe("ev3_ir", 10, &Motors::irCallback, &ev3_motors);
+  ros::Subscriber ir_sub = n.subscribe("ev3_ir", 5, &Motors::irCallback, &ev3_motors);
 
-  ros::Subscriber motor_sub = n.subscribe(topicName, 100,  &Motors::motorCommandCallback, &ev3_motors);
+  ros::Subscriber motor_sub = n.subscribe(topicName, 5,  &Motors::motorCommandCallback, &ev3_motors);
 
   ros::spin();
 
