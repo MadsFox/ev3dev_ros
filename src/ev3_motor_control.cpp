@@ -78,10 +78,10 @@ class Motors{
           right_speed = -10;
           left_speed = -10;
         }
-          ROS_INFO("right motor speed: %i", right_speed);
-          rm.set_duty_cycle_sp(-1*right_speed);
-          ROS_INFO("left motor speed: %i", left_speed);
-          lm.set_duty_cycle_sp(-1*left_speed);
+          ROS_INFO("right motor speed: %f", right_speed);
+          rm.set_duty_cycle_sp(-10*right_speed);
+          ROS_INFO("left motor speed: %f", left_speed);
+          lm.set_duty_cycle_sp(-10*left_speed);
       }catch(...) { cout << "[" << strerror(errno) << "]" << endl; }
     }
 };

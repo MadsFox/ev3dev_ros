@@ -255,7 +255,7 @@ int device::device_index() const
   using namespace std;
 
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path);
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   if (_device_index < 0)
   {
@@ -282,7 +282,7 @@ int device::get_attr_int(const std::string &name) const {
   using namespace std;
 
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path + " - " + name);
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   for(int attempt = 0; attempt < 2; ++attempt) {
     ifstream &is = ifstream_open(_path + name);
@@ -303,7 +303,7 @@ int device::get_attr_int(const std::string &name) const {
       }
     } else break;
   }
-  throw system_error(make_error_code(errc::no_such_device), _path+name + " - line 306");
+  throw system_error(make_error_code(errc::no_such_device), _path+name);
 }
 
 //-----------------------------------------------------------------------------
@@ -311,9 +311,8 @@ int device::get_attr_int(const std::string &name) const {
 void device::set_attr_int(const std::string &name, int value) {
   using namespace std;
 
-  cout << "line 314";
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path + " - " + name + " - " + std::to_string(value));
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   for(int attempt = 0; attempt < 2; ++attempt) {
     ofstream &os = ofstream_open(_path + name);
@@ -327,10 +326,10 @@ void device::set_attr_int(const std::string &name, int value) {
         os.close();
         os.clear();
       } else {
-        throw system_error(std::error_code(errno, std::system_category()), "line 329");
+        throw system_error(std::error_code(errno, std::system_category()));
       }
     } else {
-      throw system_error(make_error_code(errc::no_such_device), _path + name + " - line 332");
+      throw system_error(make_error_code(errc::no_such_device), _path + name);
     }
   }
 }
@@ -342,7 +341,7 @@ std::string device::get_attr_string(const std::string &name) const
   using namespace std;
 
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path + " - " + name);
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   ifstream &is = ifstream_open(_path + name);
   if (is.is_open())
@@ -352,7 +351,7 @@ std::string device::get_attr_string(const std::string &name) const
     return result;
   }
 
-  throw system_error(make_error_code(errc::no_such_device), _path+name+ " - line 354");
+  throw system_error(make_error_code(errc::no_such_device), _path+name);
 }
 
 //-----------------------------------------------------------------------------
@@ -362,16 +361,16 @@ void device::set_attr_string(const std::string &name, const std::string &value)
   using namespace std;
 
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path + " - " + name + " - " + value);
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   ofstream &os = ofstream_open(_path + name);
   if (os.is_open())
   {
-    if (!(os << value)) throw system_error(std::error_code(errno, std::system_category()), " - line 369");
+    if (!(os << value)) throw system_error(std::error_code(errno, std::system_category()));
     return;
   }
 
-  throw system_error(make_error_code(errc::no_such_device), _path+name + " - 373");
+  throw system_error(make_error_code(errc::no_such_device), _path+name);
 }
 
 //-----------------------------------------------------------------------------
@@ -381,7 +380,7 @@ std::string device::get_attr_line(const std::string &name) const
   using namespace std;
 
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected  - " + _path + " - " + name);
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   ifstream &is = ifstream_open(_path + name);
   if (is.is_open())
@@ -391,7 +390,7 @@ std::string device::get_attr_line(const std::string &name) const
     return result;
   }
 
-  throw system_error(make_error_code(errc::no_such_device), _path+name + " - 393");
+  throw system_error(make_error_code(errc::no_such_device), _path+name);
 }
 
 //-----------------------------------------------------------------------------
@@ -572,7 +571,7 @@ const std::vector<char>& sensor::bin_data() const
   using namespace std;
 
   if (_path.empty())
-    throw system_error(make_error_code(errc::function_not_supported), "no device connected - " + _path);
+    throw system_error(make_error_code(errc::function_not_supported), "no device connected");
 
   if (_bin_data.empty()) {
     static const map<string, int> lookup_table {
@@ -602,7 +601,7 @@ const std::vector<char>& sensor::bin_data() const
     return _bin_data;
   }
 
-  throw system_error(make_error_code(errc::no_such_device), fname + " - line 604");
+  throw system_error(make_error_code(errc::no_such_device), fname);
 }
 
 //-----------------------------------------------------------------------------
@@ -664,6 +663,11 @@ constexpr char ultrasonic_sensor::mode_us_si_in[];
 
 ultrasonic_sensor::ultrasonic_sensor(address_type address) :
   sensor(address, { ev3_ultrasonic, nxt_ultrasonic })
+{
+}
+
+ultrasonic_sensor::ultrasonic_sensor(address_type address, const std::set<sensor_type>& sensorTypes) :
+  sensor(address, sensorTypes)
 {
 }
 
@@ -797,9 +801,7 @@ bool motor::connect(const std::map<std::string, std::set<std::string>> &match) n
   {
     return device::connect(_strClassDir, _strPattern, match);
   }
-  catch (...) { 
-    std::cout << "couldnt connect" << std::endl;
-  }
+  catch (...) { }
 
   _path.clear();
 
@@ -864,20 +866,14 @@ constexpr char servo_motor::polarity_inversed[];
 
 led::led(std::string name)
 {
-  std::cout << "connecting to leds" << std::endl;
-  
   static const std::string _strClassDir { SYS_ROOT "/leds/" };
-  static const std::string _strPattern  { "led" };
-  
-  std::cout << _strClassDir << std::endl;
-  connect(_strClassDir, _strPattern, {{ "address", { name }}});
+  connect(_strClassDir, name, std::map<std::string, std::set<std::string>>());
 }
 
 //-----------------------------------------------------------------------------
 
 void led::flash(unsigned on_ms, unsigned off_ms)
 {
-  std::cout << "in led::flash" << std::endl;
   static const mode_type timer("timer");
   set_trigger(timer);
   if (on_ms)
@@ -900,6 +896,64 @@ void led::flash(unsigned on_ms, unsigned off_ms)
 
 //-----------------------------------------------------------------------------
 
+#if defined(EV3DEV_PLATFORM_BRICKPI)
+//~autogen leds-define platforms.brickpi.led>currentClass
+
+led led::blue_led1{"brickpi:led1:blue:ev3dev"};
+led led::blue_led2{"brickpi:led2:blue:ev3dev"};
+
+std::vector<led*> led::led1{ &led::blue_led1 };
+std::vector<led*> led::led2{ &led::blue_led2 };
+
+std::vector<float> led::black{ static_cast<float>(0) };
+std::vector<float> led::blue{ static_cast<float>(1) };
+
+//-----------------------------------------------------------------------------
+void led::all_off() {
+
+    blue_led1.off();
+    blue_led2.off();
+
+}
+
+//~autogen
+#elif defined(EV3DEV_PLATFORM_PISTORMS)
+//~autogen leds-define platforms.pistorms.led>currentClass
+
+led led::red_left{"pistorms:BB:red:ev3dev"};
+led led::red_right{"pistorms:BA:red:ev3dev"};
+led led::green_left{"pistorms:BB:green:ev3dev"};
+led led::green_right{"pistorms:BA:green:ev3dev"};
+led led::blue_left{"pistorms:BB:blue:ev3dev"};
+led led::blue_right{"pistorms:BA:blue:ev3dev"};
+
+std::vector<led*> led::left{ &led::red_left, &led::green_left, &led::blue_left };
+std::vector<led*> led::right{ &led::red_right, &led::green_right, &led::blue_right };
+
+std::vector<float> led::black{ static_cast<float>(0), static_cast<float>(0), static_cast<float>(0) };
+std::vector<float> led::red{ static_cast<float>(1), static_cast<float>(0), static_cast<float>(0) };
+std::vector<float> led::green{ static_cast<float>(0), static_cast<float>(1), static_cast<float>(0) };
+std::vector<float> led::blue{ static_cast<float>(0), static_cast<float>(0), static_cast<float>(1) };
+std::vector<float> led::yellow{ static_cast<float>(1), static_cast<float>(1), static_cast<float>(0) };
+std::vector<float> led::purple{ static_cast<float>(1), static_cast<float>(0), static_cast<float>(1) };
+std::vector<float> led::cyan{ static_cast<float>(0), static_cast<float>(1), static_cast<float>(1) };
+std::vector<float> led::white{ static_cast<float>(1), static_cast<float>(1), static_cast<float>(1) };
+std::vector<float> led::orange{ static_cast<float>(1), static_cast<float>(0.5), static_cast<float>(0) };
+
+//-----------------------------------------------------------------------------
+void led::all_off() {
+
+    red_left.off();
+    red_right.off();
+    green_left.off();
+    green_right.off();
+    blue_left.off();
+    blue_right.off();
+
+}
+
+//~autogen
+#else
 //~autogen leds-define platforms.ev3.led>currentClass
 
 led led::red_left{"led0:red:brick-status"};
@@ -928,6 +982,7 @@ void led::all_off() {
 }
 
 //~autogen
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -1097,7 +1152,7 @@ void sound::play(const std::string &soundfile, bool bSynchronous)
 void sound::speak(const std::string &text, bool bSynchronous)
 {
   std::ostringstream cmd;
- 
+
   cmd << "/usr/bin/espeak -a 200 --stdout \"" << text << "\""
       << " | /usr/bin/aplay -q";
 

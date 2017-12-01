@@ -42,7 +42,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <iostream>
 
 //-----------------------------------------------------------------------------
 
@@ -60,7 +59,27 @@ typedef std::string         address_type;
 const address_type INPUT_AUTO;  //!< Automatic input selection
 const address_type OUTPUT_AUTO; //!< Automatic output selection
 
+#if defined(EV3DEV_PLATFORM_BRICKPI)
+constexpr char INPUT_1[]  = "ttyAMA0:in1";  //!< Sensor port 1
+constexpr char INPUT_2[]  = "ttyAMA0:in2";  //!< Sensor port 2
+constexpr char INPUT_3[]  = "ttyAMA0:in3";  //!< Sensor port 3
+constexpr char INPUT_4[]  = "ttyAMA0:in4";  //!< Sensor port 4
 
+constexpr char OUTPUT_A[] = "ttyAMA0:outA"; //!< Motor port A
+constexpr char OUTPUT_B[] = "ttyAMA0:outB"; //!< Motor port B
+constexpr char OUTPUT_C[] = "ttyAMA0:outC"; //!< Motor port C
+constexpr char OUTPUT_D[] = "ttyAMA0:outD"; //!< Motor port D
+#elif defined(EV3DEV_PLATFORM_PISTORMS)
+constexpr char INPUT_1[]  = "pistorms:BAS1"; //!< Sensor port 1
+constexpr char INPUT_2[]  = "pistorms:BAS2"; //!< Sensor port 2
+constexpr char INPUT_3[]  = "pistorms:BBS1"; //!< Sensor port 3
+constexpr char INPUT_4[]  = "pistorms:BBS2"; //!< Sensor port 4
+
+constexpr char OUTPUT_A[] = "pistorms:BAM1"; //!< Motor port A
+constexpr char OUTPUT_B[] = "pistorms:BAM2"; //!< Motor port B
+constexpr char OUTPUT_C[] = "pistorms:BBM1"; //!< Motor port C
+constexpr char OUTPUT_D[] = "pistorms:BBM2"; //!< Motor port D
+#else // assume EV3DEV_PLATFORM_EV3
 constexpr char INPUT_1[]  = "ev3-ports:in1";  //!< Sensor port 1
 constexpr char INPUT_2[]  = "ev3-ports:in2";  //!< Sensor port 2
 constexpr char INPUT_3[]  = "ev3-ports:in3";  //!< Sensor port 3
@@ -70,6 +89,7 @@ constexpr char OUTPUT_A[] = "ev3-ports:outA"; //!< Motor port A
 constexpr char OUTPUT_B[] = "ev3-ports:outB"; //!< Motor port B
 constexpr char OUTPUT_C[] = "ev3-ports:outC"; //!< Motor port C
 constexpr char OUTPUT_D[] = "ev3-ports:outD"; //!< Motor port D
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -426,6 +446,8 @@ class ultrasonic_sensor : public sensor
 {
 public:
   ultrasonic_sensor(address_type address = INPUT_AUTO);
+
+  ultrasonic_sensor(address_type address, const std::set<sensor_type>& sensorTypes);
 
   // Continuous measurement in centimeters.
   static constexpr char mode_us_dist_cm[] = "US-DIST-CM";
@@ -1450,9 +1472,7 @@ public:
   void on()  { set_brightness(max_brightness()); }
 
   // Turns the led off.
-  void off() { 
-    std::cout << "turning led off" << std::endl;
-    set_brightness(0); }
+  void off() { set_brightness(0); }
 
   // Enables timer trigger and sets delay_on and delay_off attributes to the
   // provided values (in milliseconds).
