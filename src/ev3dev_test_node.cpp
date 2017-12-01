@@ -480,13 +480,13 @@ void led_action(const char *name, led &l)
     switch (c)
     {
     case '0':
+			cout << "Turning: led off" << endl;
       l.off();
       break;
     case '1':
       l.on();
       break;
     case 'f':
-      cout << "i am here";
       l.flash(200, 200);
       break;
     case 'i':
@@ -551,6 +551,7 @@ void led_menu()
     switch (c)
     {
     case '1':
+			cout << "chosen greeen" << endl;
       led_action("green:left", led::green_left);
       break;
     case '2':

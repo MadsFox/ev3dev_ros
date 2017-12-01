@@ -101,7 +101,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES ros_ev3_test
+#  LIBRARIES ev3dev
   CATKIN_DEPENDS roscpp std_msgs message_runtime
   DEPENDS ev3dev
 )
@@ -120,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
  add_library(ev3dev
-   src/ev3dev.cpp
+   include/ev3dev/ev3dev.cpp
  )
 
 ## Add cmake target dependencies of the library

@@ -88,7 +88,14 @@ class Motors{
 
 int main(int argc, char **argv)
 {
-  sound::speak("get  ready  to  roll", true);
+	char str[256];
+
+  cout << "What is my topic?: ";
+	cin.get(str, 256);
+
+	string topicName(str);
+
+  sound::speak(topicName + " is  ready  to  roll", true);
 
   ros::init(argc, argv, "ev3_motor_control");
 
@@ -98,7 +105,7 @@ int main(int argc, char **argv)
 
   ros::Subscriber ir_sub = n.subscribe("ev3_ir", 10, &Motors::irCallback, &ev3_motors);
 
-  ros::Subscriber motor_sub = n.subscribe("motor_command", 10,  &Motors::motorCommandCallback, &ev3_motors);
+  ros::Subscriber motor_sub = n.subscribe(topicName, 100,  &Motors::motorCommandCallback, &ev3_motors);
 
   ros::spin();
 
