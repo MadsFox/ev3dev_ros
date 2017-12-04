@@ -83,11 +83,12 @@ class Motors{
         if(ir < 30){
           rm.set_duty_cycle_sp(-100);
           lm.set_duty_cycle_sp(-100);
-        }else if(last_right_speed != right_speed && last_left_speed != left_speed)
-          if(count%10)ROS_INFO("right motor speed: %f", right_speed);
+        }else if(last_right_speed != right_speed && last_left_speed != left_speed){
+          if(count%10==0)ROS_INFO("right motor speed: %f", right_speed);
           rm.set_duty_cycle_sp((int)(right_speed));
-          if(count%10)ROS_INFO("left motor speed: %f", left_speed);
+          if(count%10==0)ROS_INFO("left motor speed: %f", left_speed);
           lm.set_duty_cycle_sp((int)(left_speed));
+				}
       }catch(...) { cout << "[" << strerror(errno) << "]" << endl; }
 			last_right_speed = right_speed;
 			last_left_speed = left_speed;
