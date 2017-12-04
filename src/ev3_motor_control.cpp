@@ -30,6 +30,7 @@ class Motors{
   private:
     int max_speed;
     int ir = 100;
+		int count = 0;
     string right_motor_port;
     string left_motor_port;
     //vector<motor> motors_;
@@ -76,18 +77,21 @@ class Motors{
     }
 
     void update_command(float right_speed, float left_speed){
-      try{
+      right_speed = right_speed*-100;
+      left_speed = left_speed*-100;
+			try{
         if(ir < 30){
           rm.set_duty_cycle_sp(-100);
           lm.set_duty_cycle_sp(-100);
         }else if(last_right_speed != right_speed && last_left_speed != left_speed)
-          ROS_INFO("right motor speed: %f", right_speed);
-          rm.set_duty_cycle_sp((int)(-20*right_speed));
-          ROS_INFO("left motor speed: %f", left_speed);
-          lm.set_duty_cycle_sp((int)(-20*left_speed));
+          if(count%10)ROS_INFO("right motor speed: %f", right_speed);
+          rm.set_duty_cycle_sp((int)(right_speed));
+          if(count%10)ROS_INFO("left motor speed: %f", left_speed);
+          lm.set_duty_cycle_sp((int)(left_speed));
       }catch(...) { cout << "[" << strerror(errno) << "]" << endl; }
 			last_right_speed = right_speed;
 			last_left_speed = left_speed;
+			count++;
     }
 };
 
