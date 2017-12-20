@@ -132,6 +132,8 @@ include_directories(
  add_executable(ev3dev_test_node src/ev3dev_test_node.cpp)
  add_executable(ev3_ir_talker_node src/ev3_ir_talker_node.cpp)
  add_executable(ev3_motor_control src/ev3_motor_control.cpp)
+ add_executable(ev3_motor_control_twist src/ev3_motor_control_twist.cpp)
+ add_executable(ev3_motor_talker src/ev3_motor_talker.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -140,6 +142,8 @@ include_directories(
 add_dependencies(ev3dev_test_node ${catkin_EXPORTED_TARGETS})
 add_dependencies(ev3_ir_talker_node ${catkin_EXPORTED_TARGETS})
 add_dependencies(ev3_motor_control ${catkin_EXPORTED_TARGETS})
+add_dependencies(ev3_motor_control_twist ${catkin_EXPORTED_TARGETS})
+add_dependencies(ev3_motor_talker ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(ev3dev_test_node
@@ -153,6 +157,16 @@ target_link_libraries(ev3_ir_talker_node
  )
 
 target_link_libraries(ev3_motor_control
+   ${catkin_LIBRARIES}
+   ev3dev
+ )
+
+target_link_libraries(ev3_motor_control_twist
+   ${catkin_LIBRARIES}
+   ev3dev
+ )
+
+target_link_libraries(ev3_motor_talker
    ${catkin_LIBRARIES}
    ev3dev
  )
